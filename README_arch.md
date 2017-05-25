@@ -127,8 +127,8 @@ does similar for Ur and Uz into U and bz, br into b.  So we end up
 with 6 named parameters per GRU in the code: 4 weight matrices and 2
 bias vectors.
 
-The equations in the paper omits biases but they are shown in the
-named parameters above.
+The equations in the paper omit biases but they are shown in the named
+parameters above.
 
 ----
 
