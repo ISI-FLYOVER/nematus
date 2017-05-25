@@ -6,7 +6,7 @@ In our tiny_sample:
 
 ```
 VOCAB_SIZE = 90000
-dim_words = 500
+dim_word = 500
 n_words = 90000
 n_words_src = 90000
 dim = 1024
@@ -26,7 +26,7 @@ as well, but note that we maintain length 1024 for the decoder hidden
 state.
 
 Below, the proposed new dimensions are shown following 'pv -->'.  It
-looks like 5 weight matrices must be updated.
+looks like 8 weight matrices must be updated.
 
 ```
 embedding
@@ -76,15 +76,14 @@ decoder
 
 ```
   attention
-    decoder_W_comb_att       (1024, 2048)           Ua
-    decoder_Wc_att           (2048, 2048)           Wa         pv --> (2548, 2048)
-    decoder_b_att            (2048, )               
-    decoder_U_att            (2048, 1)              va
+    decoder_W_comb_att       (1024, 2048)           Ua         pv --> (1024, 2548)
+    decoder_Wc_att           (2048, 2048)           Wa         pv --> (2548, 2548)
+    decoder_b_att            (2048, )                          pv --> (2548, )
+    decoder_U_att            (2048, 1)              va         pv --> (2548, 1)
     decoder_c_tt             (1, )                  (not in paper, like a bias?)
 ```
 
 ![Image of attention](images/attention.jpg)
-
 
 ```
   GRU2
@@ -92,7 +91,7 @@ decoder
     decoder_b_nl             (2048, )               (combined biases for reset and update gates)
     decoder_Ux_nl            (1024, 1024)           U
     decoder_bx_nl            (1024, )
-    decoder_Wc               (2048, 2048)           Wr Wz      pv --> (3048, 1024)
+    decoder_Wc               (2048, 2048)           Wr Wz      pv --> (2548, 2048)
     decoder_Wcx              (2048, 1024)           W          pv --> (2548, 1024)
 ```
 
