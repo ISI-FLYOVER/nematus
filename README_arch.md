@@ -1,5 +1,7 @@
 Notes on the Nematus architecture and code...
 
+http://aclweb.org/anthology/E17-3017
+
 In our tiny_sample:
 
 ```
@@ -24,7 +26,7 @@ as well, but note that we maintain length 1024 for the decoder hidden
 state.
 
 Below, the proposed new dimensions are shown following 'pv -->'.  It
-looks like 4 weight matrices must be updated.
+looks like 5 weight matrices must be updated.
 
 ```
 embedding
@@ -106,7 +108,7 @@ readout
     ff_logit_prev_W          (500, 500)             Wt2
     ff_logit_prev_b          (500, )
   context
-    ff_logit_ctx_W           (2048, 500)            Wt3
+    ff_logit_ctx_W           (2048, 500)            Wt3        pv --> (2548, 500)
     ff_logit_ctx_b           (500, )
   output 1-of-k
     ff_logit_W               (500, 90000)           Wo
