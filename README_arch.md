@@ -10,14 +10,23 @@ n_words_src = 90000
 dim = 1024
 ```
 
-Below, simple vectors are shown with dimensions (N, ), because these
-are numpy shapes, which are python tuples.  A tuple with one element
-is written with an empty second element.
+One way to add paragraph vectors is by extending the h vectors.
+There's one h vector for each source word.  Each h vector is the
+concatenation of the forward and backward encoder hidden states at
+each timestep.  Each GRU has 1024 units, so each has dimension 2048.
+Extending by paragraph vectors of length 500 means h' would have
+dimension 2548.
+
+In the decoder, each c vector is a linear combination of the h
+vectors, so c must also now have dimension 2548.  Any weight matrices
+in the decoder that directly multiple h or c must therefore be
+extended as well.  Below, the proposed new dimensions are shown
+following 'pv -->'.  It looks like 4 weight matrices must be updated.
 
 ```
 embedding
-  Wemb                       (90000, 500)          source word embeddings
-  Wemb_dec                   (90000. 500)          target word embeddings (in decoder)
+  Wemb                       (90000, 500)           source word embeddings
+  Wemb_dec                   (90000. 500)           target word embeddings (in decoder)
 ```
 
 ```
@@ -41,7 +50,7 @@ encoder: bidirectional RNN
 
 ```
 init_state, init_cell
-  ff_state_W                 (2048, 1024)           Winit
+  ff_state_W                 (2048, 1024)           Winit      pv --> (2548, 1024)
   ff_state_b                 (1024, )
 ```
 
@@ -63,7 +72,7 @@ decoder
 ```
   attention
     decoder_W_comb_att       (1024, 2048)           Ua
-    decoder_Wc_att           (2048, 2048)           Wa
+    decoder_Wc_att           (2048, 2048)           Wa         pv --> (2548, 2048)
     decoder_b_att            (2048, )               
     decoder_U_att            (2048, 1)              va
     decoder_c_tt             (1, )                  (not in paper, like a bias?)
@@ -78,8 +87,8 @@ decoder
     decoder_b_nl             (2048, )               (combined biases for reset and update gates)
     decoder_Ux_nl            (1024, 1024)           U
     decoder_bx_nl            (1024, )
-    decoder_Wc               (2048, 2048)           Wr Wz
-    decoder_Wcx              (2048, 1024)           W
+    decoder_Wc               (2048, 2048)           Wr Wz      pv --> (3048, 1024)
+    decoder_Wcx              (2048, 1024)           W          pv --> (2548, 1024)
 ```
 
 ![Image of GRU2](images/GRU2.jpg)
