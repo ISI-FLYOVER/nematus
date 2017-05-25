@@ -10,18 +10,6 @@ n_words_src = 90000
 dim = 1024
 ```
 
-Initializes numpy arrays for all the parameter matrices, with random
-values.  At this point these are actual numpy arrays with an observed
-shape.  These later get fed into theno shared variables where they are
-harder to observe.
-
-The paper omits biases but they are shown below.
-
-Each GRU has 6 weight matrices plus bias for a total of 9 parameters
-per GRU.  The code concatenates the Wr and Wz matrices into one W
-matrix.  It does similar for Ur and Uz into U and bz, br into b.  So
-we end up with 6 named parameters per GRU in the code.
-
 Below, simple vectors are shown with dimensions (N, ), because these
 are numpy shapes, which are python tuples.  A tuple with one element
 is written with an empty second element.
@@ -98,3 +86,24 @@ readout
     ff_logit_W               (500, 90000)           Wo
     ff_logit_b               (90000, )
 ```
+
+In the [GRU math](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
+each unit has a reset gate (r) and an update gate (z).  Each gate is
+governed by two weight matrices and bias vector.  There's also a
+proposed state which is governed by two weight matrices and a bias
+vector.  There are therefore a total of 6 weight matrices and 3 bias
+vectors for each GRU.
+
+The code concatenates the Wr and Wz matrices into one W matrix.  It
+does similar for Ur and Uz into U and bz, br into b.  So we end up
+with 6 named parameters per GRU in the code: 4 weight matrices and 2
+bias vectors.
+
+----
+
+The training code starts by initializing numpy arrays for all the
+parameter matrices, with random values.  At this point these are
+actual numpy arrays with an observed shape.  These later get fed into
+theano shared variables where they are harder to observe.
+
+The paper omits biases but they are shown above.
