@@ -101,6 +101,10 @@ def init_params(options):
                                               prefix='encoder_r',
                                               nin=options['dim_word'],
                                               dim=options['dim'])
+
+    # joelb: ctxdim is the size of the h vectors.  If we increase it here
+    # (via a parameter), it looks like it will create the correctly size
+    # matrices and vectors below.
     ctxdim = 2 * options['dim']
 
     # init_state, init_cell
@@ -233,6 +237,8 @@ def build_model(tparams, options):
     y_mask = tensor.matrix('y_mask', dtype='float32')
     y_mask.tag.test_value = numpy.ones(shape=(8, 10)).astype('float32')
 
+    # joelb: ctx here are the h vectors - I think this is where we need to
+    # append the pv.  But see below about ctx_mean.
     x, ctx = build_encoder(tparams, options, trng, use_noise, x_mask, sampling=False)
     n_samples = x.shape[2]
     n_timesteps_trg = y.shape[0]
@@ -256,6 +262,10 @@ def build_model(tparams, options):
         ctx_dropout_d = theano.shared(numpy.array([1.]*4, dtype='float32'))
 
     # mean of the context (across time) will be used to initialize decoder rnn
+    # joelb: If pv is the same for every word in the sentence, the average
+    # should be fine.  But if each pv is a different word embedding for each
+    # word, that's probably not right.  See this proposed experiment:
+    # https://github.com/ISI-FLYOVER/research/issues/33
     ctx_mean = (ctx * x_mask[:, :, None]).sum(0) / x_mask.sum(0)[:, None]
 
     # or you can use the last state of forward + backward encoder rnns
