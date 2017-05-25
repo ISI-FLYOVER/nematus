@@ -19,9 +19,12 @@ dimension 2548.
 
 In the decoder, each c vector is a linear combination of the h
 vectors, so c must also now have dimension 2548.  Any weight matrices
-in the decoder that directly multiple h or c must therefore be
-extended as well.  Below, the proposed new dimensions are shown
-following 'pv -->'.  It looks like 4 weight matrices must be updated.
+in the decoder that directly touch h or c must therefore be extended
+as well, but note that we maintain length 1024 for the decoder hidden
+state.
+
+Below, the proposed new dimensions are shown following 'pv -->'.  It
+looks like 4 weight matrices must be updated.
 
 ```
 embedding
