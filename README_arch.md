@@ -1,6 +1,6 @@
 Notes on the Nematus architecture and code...
 
-In out tiny_sample:
+In our tiny_sample:
 
 ```
 VOCAB_SIZE = 90000
