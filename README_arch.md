@@ -12,6 +12,25 @@ n_words_src = 90000
 dim = 1024
 ```
 
+----
+
+In the [GRU math](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
+each unit has a reset gate (r) and an update gate (z).  Each gate is
+governed by two weight matrices and bias vector.  There's also a
+proposed state which is governed by two weight matrices and a bias
+vector.  There are therefore a total of 6 weight matrices and 3 bias
+vectors for each GRU.
+
+The code concatenates the Wr and Wz matrices into one W matrix.  It
+does similar for Ur and Uz into U and bz, br into b.  So we end up
+with 6 named parameters per GRU in the code: 4 weight matrices and 2
+bias vectors.
+
+The equations in the paper omit biases but they are shown in the named
+parameters above.
+
+----
+
 One way to add paragraph vectors is by extending the h vectors.
 There's one h vector for each source word.  Each h vector is the
 concatenation of the forward and backward encoder hidden states at
@@ -27,6 +46,8 @@ state.
 
 Below, the proposed new dimensions are shown following 'pv -->'.  It
 looks like 8 weight matrices must be updated.
+
+----
 
 ```
 embedding
@@ -115,25 +136,3 @@ readout
 ```
 
 ![Image of readout](images/readout.jpg)
-
-In the [GRU math](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
-each unit has a reset gate (r) and an update gate (z).  Each gate is
-governed by two weight matrices and bias vector.  There's also a
-proposed state which is governed by two weight matrices and a bias
-vector.  There are therefore a total of 6 weight matrices and 3 bias
-vectors for each GRU.
-
-The code concatenates the Wr and Wz matrices into one W matrix.  It
-does similar for Ur and Uz into U and bz, br into b.  So we end up
-with 6 named parameters per GRU in the code: 4 weight matrices and 2
-bias vectors.
-
-The equations in the paper omit biases but they are shown in the named
-parameters above.
-
-----
-
-The training code starts by initializing numpy arrays for all the
-parameter matrices, with random values.  At this point these are
-actual numpy arrays with an observed shape.  These later get fed into
-theano shared variables where they are harder to observe.
