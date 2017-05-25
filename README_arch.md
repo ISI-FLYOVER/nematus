@@ -23,7 +23,7 @@ embedding
 ```
 encoder: bidirectional RNN
   forward RNN
-    encoder_W                (500, 2048)
+    encoder_W                (500, 2048)            encoder equations not in paper
     encoder_b                (2048, )
     encoder_U                (1024, 2048)
     encoder_Wx               (500, 1024)
@@ -45,6 +45,8 @@ init_state, init_cell
   ff_state_b                 (1024, )
 ```
 
+![Image of Winit](images/Winit.jpg)
+
 ```
 decoder
   GRU1
@@ -54,22 +56,34 @@ decoder
     decoder_Wx               (500, 1024)            W'
     decoder_Ux               (1024, 1024)           U'
     decoder_bx               (1024, )
+```
 
-  GRU2
-    decoder_U_nl             (1024, 2048)
-    decoder_b_nl             (2048, )
-    decoder_Ux_nl            (1024, 1024)
-    decoder_bx_nl            (1024, )
-    decoder_Wc               (2048, 2048)
-    decoder_Wcx              (2048, 1024)
+![Image of GRU1](images/GRU1.jpg)
 
+```
   attention
     decoder_W_comb_att       (1024, 2048)           Ua
     decoder_Wc_att           (2048, 2048)           Wa
     decoder_b_att            (2048, )               
     decoder_U_att            (2048, 1)              va
-    decoder_c_tt             (1, )                  ?    ask Scott?  did we decide this is like a bias?
+    decoder_c_tt             (1, )                  (not in paper, like a bias?)
 ```
+
+![Image of attention](images/attention.jpg)
+
+
+```
+  GRU2
+    decoder_U_nl             (1024, 2048)           Ur Uz
+    decoder_b_nl             (2048, )               (combined biases for reset and update gates)
+    decoder_Ux_nl            (1024, 1024)           U
+    decoder_bx_nl            (1024, )
+    decoder_Wc               (2048, 2048)           Wr Wz
+    decoder_Wcx              (2048, 1024)           W
+```
+
+![Image of GRU2](images/GRU2.jpg)
+
 
 ```
 readout
@@ -87,6 +101,8 @@ readout
     ff_logit_b               (90000, )
 ```
 
+![Image of readout](images/readout.jpg)
+
 In the [GRU math](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
 each unit has a reset gate (r) and an update gate (z).  Each gate is
 governed by two weight matrices and bias vector.  There's also a
@@ -99,11 +115,12 @@ does similar for Ur and Uz into U and bz, br into b.  So we end up
 with 6 named parameters per GRU in the code: 4 weight matrices and 2
 bias vectors.
 
+The equations in the paper omits biases but they are shown in the
+named parameters above.
+
 ----
 
 The training code starts by initializing numpy arrays for all the
 parameter matrices, with random values.  At this point these are
 actual numpy arrays with an observed shape.  These later get fed into
 theano shared variables where they are harder to observe.
-
-The paper omits biases but they are shown above.
