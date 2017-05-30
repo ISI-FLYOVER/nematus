@@ -156,6 +156,10 @@ class TextIterator:
                 if self.n_words_target > 0:
                     tt = [w if w < self.n_words_target else 1 for w in tt]
 
+                # joelb: bug here?  should be 'or' not 'and'?  Current code
+                # allows one side to have any length.  But this issue is
+                # masked because code in prepare_date() reapplies the maxlen
+                # limit.  (But there's a fencepost error there!)
                 if len(ss) > self.maxlen and len(tt) > self.maxlen:
                     continue
                 if self.skip_empty and (not ss or not tt):
